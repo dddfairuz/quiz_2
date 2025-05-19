@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Juego: Pincha el Globo Correcto</title>
+  <style>
+    body { margin: 0; font-family: sans-serif; background: #e0f7fa; overflow: hidden; }
+    h2 { text-align: center; }
+    #pregunta { font-size: 24px; text-align: center; margin: 20px; }
+    #globos {
+      display: flex; justify-content: center; flex-wrap: wrap;
+      gap: 20px; padding: 20px;
+    }
+    .globo {
+      width: 160px; height: 160px;
+      background: radial-gradient(circle at 50% 30%, #f44336, #c62828);
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+      color: white; display: flex; align-items: center;
+      justify-content: center; text-align: center;
+      font-weight: bold; cursor: pointer;
+      padding: 10px;
+      transition: transform 0.2s;
+    }
+    .globo:hover { transform: scale(1.1); }
+    #vidas, #puntos {
+      text-align: center; font-size: 20px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<h2>🎈 Pincha el Globo Correcto 🎈</h2>
+<div id="pregunta"></div>
+<div id="globos"></div>
+<div id="vidas"></div>
+<div id="puntos">Puntos: 0</div>
+
+<script>
+const preguntas = [
+  { q: "¿Cuántas dimensiones tiene una línea recta?", o: ["1", "2", "3"], r: "1" },
+  { q: "¿Qué es una arista?", o: ["Lado donde se unen caras", "Un punto", "Un ángulo"], r: "Lado donde se unen caras" },
+  { q: "¿Qué es un ángulo?", o: ["Apertura entre dos líneas", "Un punto", "Una línea curva"], r: "Apertura entre dos líneas" },
+  { q: "¿Qué define una línea vertical?", o: ["Va de arriba a abajo", "De izquierda a derecha", "Es curva"], r: "Va de arriba a abajo" },
+  { q: "¿Qué significa que dos rectas sean paralelas?", o: ["Nunca se cruzan", "Forman un ángulo recto", "Se tocan"], r: "Nunca se cruzan" },
+  { q: "¿Cuántos vértices tiene un cubo?", o: ["8", "6", "12"], r: "8" },
+  { q: "¿Cuántas aristas tiene un cubo?", o: ["12", "8", "6"], r: "12" },
+  { q: "¿Qué es un vértice?", o: ["Punto donde se unen líneas o aristas", "Una cara", "Un volumen"], r: "Punto donde se unen líneas o aristas" },
+  { q: "¿Qué es un plano 2D?", o: ["Plano con largo y ancho", "Tiene volumen", "Tiene profundidad"], r: "Plano con largo y ancho" },
+  { q: "¿Cuáles son los ejes en un plano 2D?", o: ["X e Y", "X, Y y Z", "X y Z"], r: "X e Y" },
+  { q: "¿Qué ángulo forman dos rectas perpendiculares?", o: ["90°", "45°", "180°"], r: "90°" },
+  { q: "¿Qué es una circunferencia?", o: ["Línea curva cerrada", "Figura con lados rectos", "Un cubo"], r: "Línea curva cerrada" },
+  { q: "¿Qué es un polígono?", o: ["Figura cerrada de líneas rectas", "Figura curva", "Una esfera"], r: "Figura cerrada de líneas rectas" },
+  { q: "¿Qué representa un punto?", o: ["Posición en el espacio", "Una línea", "Un volumen"], r: "Posición en el espacio" },
+  { q: "¿Qué diferencia un espacio 3D de uno 2D?", o: ["Tiene profundidad", "Solo ancho y alto", "Es una línea"], r: "Tiene profundidad" },
+  { q: "¿Cómo se llama el punto donde se unen dos lados?", o: ["Vértice", "Arista", "Cara"], r: "Vértice" },
+  { q: "¿Cuántas caras tiene un cubo?", o: ["6", "8", "12"], r: "6" },
+  { q: "¿Qué figura no tiene aristas?", o: ["Esfera", "Cubo", "Prisma"], r: "Esfera" },
+  { q: "¿Qué línea se extiende de izquierda a derecha?", o: ["Horizontal", "Vertical", "Diagonal"], r: "Horizontal" },
+  { q: "¿Qué característica tienen las rectas paralelas?", o: ["Nunca se cruzan", "Forman 90°", "Son curvas"], r: "Nunca se cruzan" }
+];
+
+let vidas = 10;
+let puntos = 0;
+let indice = 0;
+
+function mostrarPregunta() {
+  if (indice >= preguntas.length) {
+    alert("🎉 ¡Ganaste! Puntos: " + puntos);
+    location.reload();
+    return;
+  }
+  const p = preguntas[indice];
+  document.getElementById("pregunta").textContent = p.q;
+  const contenedor = document.getElementById("globos");
+  contenedor.innerHTML = "";
+  let opcionesDesordenadas = [...p.o].sort(() => Math.random() - 0.5);
+  opcionesDesordenadas.forEach(opcion => {
+    let globo = document.createElement("div");
+    globo.className = "globo";
+    globo.textContent = opcion;
+    globo.onclick = () => responder(opcion);
+    contenedor.appendChild(globo);
+  });
+}
+
+function responder(opcion) {
+  let correcta = preguntas[indice].r;
+  if (opcion === correcta) {
+    puntos += 10;
+    document.getElementById("puntos").textContent = "Puntos: " + puntos;
+  } else {
+    vidas--;
+    actualizarVidas();
+    if (vidas === 0) {
+      alert("❌ Te quedaste sin vidas. Puntos: " + puntos);
+      location.reload();
+    }
+  }
+  indice++;
+  mostrarPregunta();
+}
+
+function actualizarVidas() {
+  const corazones = "❤️".repeat(vidas);
+  document.getElementById("vidas").textContent = "Vidas " + corazones;
+}
+
+actualizarVidas();
+mostrarPregunta();
+</script>
+
+</body>
+</html>
+
